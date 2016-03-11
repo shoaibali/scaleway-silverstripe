@@ -65,7 +65,7 @@ ADD ./patches/usr/local/ /usr/local/
 RUN rm -rf /var/www && \
     composer create-project silverstripe/installer /var/www/ && \
     /usr/local/bin/ss_config.sh && \
-    rm -f /usr/local/bin/ss_config.sh &&
+    rm -f /usr/local/bin/ss_config.sh
 
 # Configure NginX
 RUN ln -sf /etc/nginx/sites-available/000-default.conf /etc/nginx/sites-enabled/000-default.conf && \
