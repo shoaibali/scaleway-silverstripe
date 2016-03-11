@@ -41,15 +41,13 @@ RUN echo "LANG=en_US.UTF-8\n" > /etc/default/locale && \
   locale-gen
 
 
-#  - Phpunit, Composer, Phing
+#  - Phpunit, Composer
 RUN wget https://phar.phpunit.de/phpunit-3.7.37.phar && \
   chmod +x phpunit-3.7.37.phar && \
   mv phpunit-3.7.37.phar /usr/local/bin/phpunit && \
   wget https://getcomposer.org/composer.phar && \
   chmod +x composer.phar && \
-  mv composer.phar /usr/local/bin/composer && \
-  pear channel-discover pear.phing.info && \
-  pear install phing/phing
+  mv composer.phar /usr/local/bin/composer
 
 # Update Composer
 RUN /usr/local/bin/composer self-update
