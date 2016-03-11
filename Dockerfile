@@ -63,7 +63,7 @@ ADD ./patches/usr/local/ /usr/local/
 # Install SilverStripe installer using composer
 
 RUN rm -rf /var/www && \
-    composer create-project silverstripe/installer /var/www/ && \
+    composer --no-dev create-project silverstripe/installer /var/www/ && \
     /usr/local/bin/ss_config.sh && \
     rm -f /usr/local/bin/ss_config.sh
 
