@@ -26,7 +26,7 @@ define('SS_DATABASE_NAME', 'database_name_here');
 define('SS_DATABASE_USERNAME', 'username_here');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'password_here');
+define('SS_DATABASE_PASSWORD', 'password_here');
 
 /** MySQL hostname */
 define('SS_DATABASE_SERVER', 'localhost');
