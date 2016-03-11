@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+# We need this extra script run ONCE on startup to initialize the
+# database with per-image passwords.
+
+export DEBIAN_FRONTEND=noninteractive
+
+MYSQL_ROOT_PASSWORD=$(head /dev/urandom -c 512 | sha1sum | awk '// { print $1; }')
+dbname="silverstripe"
+
+# Set correct permission to mysql user
+chown -R mysql:mysql /var/lib/mysql
+
+# MOTD & README
+sed -i "s/{mysql_root_password}/$MYSQL_ROOT_PASSWORD/" /etc/update-motd.d/70-silverstripe
+sed -i "s/{mysql_root_password}/$MYSQL_ROOT_PASSWORD/" /root/README
+
+# Configure silverstripe database details
+sed -i "s/define('SS_DATABASE_NAME',.*/define('SS_DATABASE_NAME', '$dbname');/" /var/www/_ss_environment.php
+sed -i "s/define('SS_DATABASE_USERNAME',.*/define('SS_DATABASE_USERNAME', 'root');/" /var/www/_ss_environment.php
+sed -i "s/define('SS_DATABASE_PASSWORD',.*/define('SS_DATABASE_PASSWORD', '$MYSQL_ROOT_PASSWORD');/" /var/www/_ss_environment.php
+chown -R www-data /var/www/
+
+# Configure postfix
+sed -i "s/mydestination = .*/mydestination = $(/usr/local/bin/oc-metadata --cached ID).pub.cloud.scaleway.com, localhost.localdomain, localhost/g" /etc/postfix/main.cf
+sed -i "s/myhostname = .*/myhostname = $(/usr/local/bin/oc-metadata --cached ID).pub.cloud.scaleway.com/g" /etc/postfix/main.cf
+sed -i "s/inet_interfaces = .*/inet_interfaces = localhost/g" /etc/postfix/main.cf
+
+postfix -c /etc/postfix/ set-permissions
+chown -R root:postdrop /usr/sbin/postqueue
+chown -R root:postdrop /usr/sbin/postdrop
+chmod g+s /usr/sbin/postqueue /usr/sbin/postdrop
+/etc/initd.d/postfix start
+
+# Let's install MySQL
+chmod 1777 /tmp
+/etc/init.d/mysql start
+mysqladmin -u root password $MYSQL_ROOT_PASSWORD
+
+# this service is only needed on the first boot so we remove it here.
+rm -f /etc/init/init-silverstripe.conf
+rm -f /usr/local/sbin/oc-init-silverstripe
