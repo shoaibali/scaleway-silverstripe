@@ -21,16 +21,15 @@ RUN apt-get -q update     \
 	php5-gd           \
 	php5-mcrypt       \
 	php5-mysql        \
-  php5-tidy         \
-  php-apc           \
-  php5-mysqlnd      \
-  php-pear          \
-  curl              \
-  php5-curl         \
+	php5-tidy         \
+	php-apc           \
+ 	php-pear          \
+  	curl              \
+  	php5-curl         \
 	pwgen             \
-  git               \
-  git-core          \
-  locales           \
+  	git               \
+  	git-core          \
+  	locales           \
 	nginx             \
  && apt-get clean
 
