@@ -7,7 +7,7 @@ cat << EOF > /var/www/_ss_environment.php
  *
  * The _ss_environment.php creation script uses this file during the
  * installation. You don't have to use the web site, you can
- * copy this file to "wp-config.php" and fill in the values.
+ * copy this file to "_ss_environment.php" and fill in the values.
  *
  *
  * @link https://docs.silverstripe.org/en/3.2/getting_started/environment_management
@@ -18,8 +18,7 @@ cat << EOF > /var/www/_ss_environment.php
 // These four define set the database connection details.
 define('SS_DATABASE_CLASS', 'MySQLPDODatabase');
 
-// ** MySQL settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
+/** The name of the database for SilverStripe */
 define('SS_DATABASE_NAME', 'database_name_here');
 
 /** MySQL database username */
