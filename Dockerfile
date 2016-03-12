@@ -1,9 +1,18 @@
-## -*- docker-image-name: "scaleway/silverstripe:trusty" -*-
-FROM scaleway/ubuntu:trusty
+## -*- docker-image-name: "scaleway/silverstripe:latest" -*-
+FROM scaleway/ubuntu:amd64-trusty
+# following 'FROM' lines are used dynamically thanks do the image-builder
+# which dynamically update the Dockerfile if needed.
+#FROM scaleway/ubuntu:armhf-trusty       # arch=armv7l
+#FROM scaleway/ubuntu:arm64-trusty       # arch=arm64
+#FROM scaleway/ubuntu:i386-trusty        # arch=i386
+#FROM scaleway/ubuntu:mips-trusty        # arch=mips
+
+
 MAINTAINER Scaleway <opensource@scaleway.com> (@scaleway)
 
+
 # Prepare rootfs for image-builder
-RUN /usr/local/sbin/builder-enter
+RUN /usr/local/sbin/scw-builder-enter
 
 # Pre-seeding for postfix
 RUN sudo su root -c "debconf-set-selections <<< \"postfix postfix/main_mailer_type string 'Internet Site'\"" \
@@ -11,8 +20,8 @@ RUN sudo su root -c "debconf-set-selections <<< \"postfix postfix/main_mailer_ty
 
 # Install packages
 RUN apt-get -q update     \
- && apt-get -q -y upgrade \
- && apt-get install -y -q \
+ && apt-get --force-yes -y -qq upgrade \
+ && apt-get install -y -qq \
 	mailutils         \
 	mysql-server-5.5  \
 	php5              \
@@ -23,14 +32,14 @@ RUN apt-get -q update     \
 	php5-mysql        \
 	php5-tidy         \
 	php-apc           \
- 	php-pear          \
-  	curl              \
-  	php5-curl         \
-	pwgen             \
-  	git               \
-  	git-core          \
-  	locales           \
-	nginx             \
+  php-pear          \
+  curl              \
+  php5-curl         \
+  pwgen             \
+  git               \
+  git-core          \
+  locales           \
+  nginx             \
  && apt-get clean
 
 # Uninstall apache
@@ -55,10 +64,9 @@ RUN /usr/local/bin/composer self-update
 ENV SILVERSTRIPE_VERSION 3.2
 ENV LANG en_US.UTF-8
 
-# Patch rootfs
-ADD ./patches/root/ /root/
-ADD ./patches/etc/ /etc/
-ADD ./patches/usr/local/ /usr/local/
+
+# Patches
+COPY ./overlay/ /
 
 # Install SilverStripe installer using composer
 
@@ -71,9 +79,7 @@ RUN rm -rf /var/www && \
 RUN ln -sf /etc/nginx/sites-available/000-default.conf /etc/nginx/sites-enabled/000-default.conf && \
     rm -f /etc/nginx/sites-enabled/default
 
-RUN /etc/init.d/mysql start \
-  && mysql -u root -e 'CREATE DATABASE `silverstripe` DEFAULT CHARACTER SET `utf8mb4` COLLATE `utf8mb4_unicode_ci`;' \
-  && killall mysqld
+RUN chown -R www-data:www-data /var/www/html
 
 # Clean rootfs from image-builder
-RUN /usr/local/sbin/builder-leave
+RUN /usr/local/sbin/scw-builder-leave

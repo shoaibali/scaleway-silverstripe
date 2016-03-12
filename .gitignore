@@ -1,5 +1,5 @@
-.docker-container.built
-docker-rules.mk
+.overlays
+tmp-*/
 *~
 .*~
 *#
@@ -8,5 +8,7 @@ source.tar.gz
 source.tar.xz
 sd*.raw*
 rootfs*
-*/*.tar
-*/*.built
+*.tar
+*.built
+.docker-container.built
+docker-rules.mk

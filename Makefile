@@ -1,9 +1,11 @@
-NAME =			silverstripe
-VERSION =		latest
-VERSION_ALIASES =	3.2.2 3.2 3
-TITLE =			SilverStripe
-DESCRIPTION =		SilverStripe with MySQL
-SOURCE_URL =		https://github.com/shoaibali/scaleway-silverstripe
+NAME =					silverstripe
+VERSION =				latest
+VERSION_ALIASES =		3.2.2 3.2 3
+TITLE =					SilverStripe
+DESCRIPTION =			SilverStripe with MySQL
+SOURCE_URL =			https://github.com/shoaibali/scaleway-silverstripe
+VENDOR_URL =			https://www.silverstripe.org
+DEFAULT_IMAGE_ARCH =	x86_64
 
 IMAGE_VOLUME_SIZE =	50G
 IMAGE_BOOTSCRIPT =	stable
