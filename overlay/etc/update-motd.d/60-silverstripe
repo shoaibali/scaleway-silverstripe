@@ -1,27 +1,23 @@
+#!/bin/bash
+
+PUBLIC_IP=$(oc-metadata --cached PUBLIC_IP_ADDRESS)
+
+cat <<EOF
 Hi Cloud Rider,
-
-Welcome to the Drupal image, the following are installed
+Welcome to the SilverStripe image, the following are installed
 and configured:
-
 - SilverStripe
 - Nginx
 - PHP5-FPM
 - MySQL
-
-The folder `/var/www` contains the SilverStripe installer files.
-
+The folder /var/www/ contains the SilverStripe installer files.
 Useful links:
-
 - https://github.com/scaleway-community/scaleway-silverstripe
-- http://your-ip/
-
+- http://${PUBLIC_IP}/
 The MySQL credentials are:
-
 - login: root
 - password: {mysql_root_password}
-
 Your website configuration lies at:
-
 - /etc/nginx/sites-available/000-default.conf
-
 Enjoy!
+EOF

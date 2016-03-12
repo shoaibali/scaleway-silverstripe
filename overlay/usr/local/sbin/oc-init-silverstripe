@@ -12,14 +12,9 @@ dbname="silverstripe"
 chown -R mysql:mysql /var/lib/mysql
 
 # MOTD & README
-sed -i "s/{mysql_root_password}/$MYSQL_ROOT_PASSWORD/" /etc/update-motd.d/70-silverstripe
+sed -i "s/{mysql_root_password}/$MYSQL_ROOT_PASSWORD/" /etc/update-motd.d/60-silverstripe
 sed -i "s/{mysql_root_password}/$MYSQL_ROOT_PASSWORD/" /root/README
 
-# Configure silverstripe database details
-sed -i "s/define('SS_DATABASE_NAME',.*/define('SS_DATABASE_NAME', '$dbname');/" /var/www/_ss_environment.php
-sed -i "s/define('SS_DATABASE_USERNAME',.*/define('SS_DATABASE_USERNAME', 'root');/" /var/www/_ss_environment.php
-sed -i "s/define('SS_DATABASE_PASSWORD',.*/define('SS_DATABASE_PASSWORD', '$MYSQL_ROOT_PASSWORD');/" /var/www/_ss_environment.php
-chown -R www-data /var/www/
 
 # Configure postfix
 sed -i "s/mydestination = .*/mydestination = $(/usr/local/bin/oc-metadata --cached ID).pub.cloud.scaleway.com, localhost.localdomain, localhost/g" /etc/postfix/main.cf
@@ -34,8 +29,56 @@ chmod g+s /usr/sbin/postqueue /usr/sbin/postdrop
 
 # Let's install MySQL
 chmod 1777 /tmp
-/etc/init.d/mysql start
+apt-get install -q -y mysql-server-5.5
+update-rc.d mysql enable
 mysqladmin -u root password $MYSQL_ROOT_PASSWORD
+mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE $dbname;"
+
+
+# SilverStripe configuration
+
+cat << EOF > /var/www/_ss_environment.php
+<?php
+/**
+ * The _ss_environment configuration for SilverStripe
+ *
+ * The _ss_environment.php creation script uses this file during the
+ * installation. You don't have to use the web site, you can
+ * copy this file to "_ss_environment.php" and fill in the values.
+ *
+ *
+ * @link https://docs.silverstripe.org/en/3.2/getting_started/environment_management
+ *
+ * @package SilverStripe
+ */
+
+// These four define set the database connection details.
+define('SS_DATABASE_CLASS', 'MySQLPDODatabase');
+
+/** The name of the database for SilverStripe */
+define('SS_DATABASE_NAME', '$dbname');
+
+/** MySQL database username */
+define('SS_DATABASE_USERNAME', 'root');
+
+/** MySQL database password */
+define('SS_DATABASE_PASSWORD', '$MYSQL_ROOT_PASSWORD');
+
+/** MySQL hostname */
+define('SS_DATABASE_SERVER', 'localhost');
+
+/** Environment type */
+define('SS_ENVIRONMENT_TYPE', 'live');
+
+// This causes errors to be written to the BASE_PATH/silverstripe.log file.
+// Path must be relative to BASE_PATH
+define('SS_ERROR_LOG', 'silverstripe.log');
+
+global $_FILE_TO_URL_MAPPING;
+$_FILE_TO_URL_MAPPING['/var/www'] = 'http://localhost';
+EOF
+
+chown -R www-data /var/www/
 
 # this service is only needed on the first boot so we remove it here.
 rm -f /etc/init/init-silverstripe.conf

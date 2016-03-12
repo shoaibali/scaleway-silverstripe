@@ -23,7 +23,6 @@ RUN apt-get -q update     \
  && apt-get --force-yes -y -qq upgrade \
  && apt-get install -y -qq \
 	mailutils         \
-	mysql-server-5.5  \
 	php5              \
 	php5-cli          \
 	php5-fpm          \
