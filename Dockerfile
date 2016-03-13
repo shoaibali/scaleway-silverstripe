@@ -76,7 +76,7 @@ RUN rm -rf /var/www && \
 RUN ln -sf /etc/nginx/sites-available/000-default.conf /etc/nginx/sites-enabled/000-default.conf && \
     rm -f /etc/nginx/sites-enabled/default
 
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /var/www
 
 # Clean rootfs from image-builder
 RUN /usr/local/sbin/scw-builder-leave
