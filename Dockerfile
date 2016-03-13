@@ -70,7 +70,7 @@ COPY ./overlay/ /
 # Install SilverStripe installer using composer
 
 RUN rm -rf /var/www && \
-    composer --no-dev create-project silverstripe/installer /var/www/
+    composer --no-dev create-project silverstripe/installer:$SILVERSTRIPE_VERSION /var/www/
 
 # Configure NginX
 RUN ln -sf /etc/nginx/sites-available/000-default.conf /etc/nginx/sites-enabled/000-default.conf && \
